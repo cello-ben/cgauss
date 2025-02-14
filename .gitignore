@@ -1,0 +1,9 @@
+*.dSYM/
+gaussian
+*.bmp
+test.txt
+videos/
+scratch.txt
+.DS_Store
+src/.DS_Store
+src/include/.DS_Store
