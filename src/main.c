@@ -8,6 +8,25 @@
 //We will work with .bmp files, and for now, only 16-bit color depth.
 //Lots of error checks need to happen for production code; this is just for fun.
 
+void blur_square(int **pixels, const size_t n)
+{
+    long sum = 0;
+    for (size_t i = 0; i < n; i++)
+    {
+        for (size_t j = 0; j < n; j++)
+        {
+            sum += pixels[i][j];
+        }
+    }
+    unsigned short avg = sum / (n * n);
+    for (size_t i = 0; i < n; i++)
+    {
+        for (size_t j = 0; j < n; j++)
+        {
+            pixels[i][j] = avg;
+        }
+    }
+}
 
 int main(int argc, char **argv)
 {
@@ -44,17 +63,12 @@ int main(int argc, char **argv)
     fread(buffer, USHORT_SZ, (IMG_WIDTH * IMG_HEIGHT) + 100, fp);
     fclose(fp);
 
-    // for (size_t i = (buffer[OFFSET] / 2) + OFFSET; i < IMG_WIDTH * IMG_HEIGHT; i++)
-    // {
-    //     buffer[i] = 0x6d83; //Set each pixel to lime green-ish color for testing.
-    // }
-    unsigned short multi_buffer[IMG_WIDTH][IMG_HEIGHT];
     size_t idx = (buffer[OFFSET] / 2) + OFFSET;
     for (size_t i = 0; i < IMG_WIDTH; i++)
     {
         for (size_t j = 0; j < IMG_HEIGHT; j++)
         {
-            multi_buffer[i][j] = buffer[idx++];
+            pixels[i][j] = buffer[idx++];
         }
     }
 
@@ -69,52 +83,52 @@ int main(int argc, char **argv)
         {
             for (size_t j = 0; j < IMG_HEIGHT; j++)
             {
-                multi_buffer[i][j] = buffer[idx++];
+                pixels[i][j] = buffer[idx++];
             }
         }
 
-        idx = (buffer[OFFSET] / 2) + OFFSET;
-        for (size_t i = 0; i < IMG_WIDTH; i++)
-        {
-            for (size_t j = 0; j < IMG_HEIGHT; j++)
-            {
-                buffer[idx++] = multi_buffer[i][j];
-            }
-        }
+        // idx = (buffer[OFFSET] / 2) + OFFSET;
+        // for (size_t i = 0; i < IMG_WIDTH; i++)
+        // {
+        //     for (size_t j = 0; j < IMG_HEIGHT; j++)
+        //     {
+        //         buffer[idx++] = pixels[i][j];
+        //     }
+        // }
 
         idx = (buffer[OFFSET] / 2) + OFFSET;
         for (size_t i = 2; i < IMG_WIDTH - 2; i++)
         {
             for (size_t j = 2; j < IMG_HEIGHT - 2; j++)
             {
-                int sum = multi_buffer[i][j] * 25;
+                int sum = pixels[i][j] * 25;
                 if (1 == 1)
                 {
-                    sum = multi_buffer[i - 2][j - 2] +
-                    multi_buffer[i - 2][j-1] +
-                    multi_buffer[i - 2][j] +
-                    multi_buffer[i - 2][j + 1] +
-                    multi_buffer[i - 2][j + 2] +
-                    multi_buffer[i - 1][j - 2] +
-                    multi_buffer[i - 1][j - 1] +
-                    multi_buffer[i - 1][j] +
-                    multi_buffer[i - 1][j + 1] +
-                    multi_buffer[i - 1][j + 2] +
-                    multi_buffer[i][j - 2] +
-                    multi_buffer[i][j - 1] +
-                    multi_buffer[i][j] +
-                    multi_buffer[i][j + 1] +
-                    multi_buffer[i][j + 2] +
-                    multi_buffer[i + 1][j - 2] +
-                    multi_buffer[i + 1][j - 1] +
-                    multi_buffer[i + 1][j] +
-                    multi_buffer[i + 1][j + 1] +
-                    multi_buffer[i + 1][j + 2] +
-                    multi_buffer[i + 2][j - 2] +
-                    multi_buffer[i + 2][j - 1] +
-                    multi_buffer[i + 2][j] +
-                    multi_buffer[i + 2][j + 1] +
-                    multi_buffer[i + 2][j + 2];
+                    sum = pixels[i - 2][j - 2] +
+                    pixels[i - 2][j-1] +
+                    pixels[i - 2][j] +
+                    pixels[i - 2][j + 1] +
+                    pixels[i - 2][j + 2] +
+                    pixels[i - 1][j - 2] +
+                    pixels[i - 1][j - 1] +
+                    pixels[i - 1][j] +
+                    pixels[i - 1][j + 1] +
+                    pixels[i - 1][j + 2] +
+                    pixels[i][j - 2] +
+                    pixels[i][j - 1] +
+                    pixels[i][j] +
+                    pixels[i][j + 1] +
+                    pixels[i][j + 2] +
+                    pixels[i + 1][j - 2] +
+                    pixels[i + 1][j - 1] +
+                    pixels[i + 1][j] +
+                    pixels[i + 1][j + 1] +
+                    pixels[i + 1][j + 2] +
+                    pixels[i + 2][j - 2] +
+                    pixels[i + 2][j - 1] +
+                    pixels[i + 2][j] +
+                    pixels[i + 2][j + 1] +
+                    pixels[i + 2][j + 2];
                 }
             buffer[idx++] = sum / 5;
             }
